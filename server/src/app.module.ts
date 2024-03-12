@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
 import { RedisModule } from '@nestjs-modules/ioredis';
@@ -10,6 +10,10 @@ import { GlobalValidationPipe } from './pipes/global-validation.pipe';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './services/auth.service';
 import { JWT_SECRET } from './utils/constant';
+import { AuthMiddleware } from './middlewares/auth.middleware';
+import { AuthGuard } from './guards/auth.guard';
+import { CommonModule } from './modules/common/common.module';
+import { NestMinioModule } from 'nestjs-minio';
 const getDatabaseConfig = () => {
   const configService = new ConfigService();
   return TypeOrmModule.forRoot({
@@ -36,16 +40,33 @@ const getRedisConfig = () => {
   });
 };
 
+const getMinioConfig = () => {
+  const configService = new ConfigService();
+  const endPoint = configService.get<string>('MINIO_ENDPOINT', 'localhost');
+  const accessKey = configService.get<string>('MINIO_ACCESSKEY', 'accessKey');
+  const secretKey = configService.get<string>('MINIO_SECRET_KEY', 'secretKey');
+
+  return NestMinioModule.register({
+    isGlobal: true,
+    endPoint,
+    port: 9000,
+    accessKey,
+    secretKey,
+    useSSL: false,
+  });
+};
 
 @Module({
   imports: [
     UserModule,
+    CommonModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     getDatabaseConfig(),
     getRedisConfig(),
     JwtModule.register({}),
+    getMinioConfig(),
   ],
   providers: [
     {
@@ -60,6 +81,15 @@ const getRedisConfig = () => {
       provide: APP_PIPE,
       useClass: GlobalValidationPipe,
     },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    AuthService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}

@@ -3,6 +3,8 @@ import TabPane from "antd/es/tabs/TabPane";
 import styles from "./index.module.less";
 import { useState } from "react";
 import { getVerifyCode, login, register } from "../../api/user";
+import useQuery from "../../hooks/useQuery";
+import { useNavigate } from "react-router";
 const REQUIRED_RULE = [{ required: true, message: "请输入${label}" }];
 const VerifyCodeButton = ({ form }: { form: FormInstance }) => {
   const [seconds, setSeconds] = useState(0);
@@ -31,15 +33,25 @@ const VerifyCodeButton = ({ form }: { form: FormInstance }) => {
 const Login = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const query = useQuery();
+  const redirectUrl = query.redirect_url;
+  const navigate = useNavigate();
   const renderForm = (withCode?: boolean) => {
     const handleSubmit = async () => {
       const fields = await form.validateFields();
       try {
+        setLoading(true);
         if (withCode) {
           await register(fields);
         }
         await login({ email: fields.email, password: fields.password });
+
         message.success("登录成功");
+        if (redirectUrl) {
+          location.href = decodeURIComponent(redirectUrl);
+        } else {
+          navigate("/");
+        }
       } finally {
         setLoading(false);
       }

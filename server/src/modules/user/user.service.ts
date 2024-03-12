@@ -2,12 +2,17 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../entities/user.entity';
-import { CreateUserDto, LoginDto } from '../../dtos/user.dto';
+import {
+  CreateUserDto,
+  LoginDto,
+  UpdateUserInfoDto,
+} from '../../dtos/user.dto';
 import { EmailService } from '../../services/email.service';
 import { RedisService } from '../../services/redis.service';
 import { generateRandomNumber, hashPassword } from '../../utils';
 import { VERIFY_CODE_PREFIX } from '../../utils/constant';
 import { AuthService } from '../../services/auth.service';
+import { NoAuth } from 'src/decorators/no-auth.decorator';
 
 @Injectable()
 export class UserService {
@@ -63,17 +68,21 @@ export class UserService {
     return this.userRepository.findOne({ where: { email, password } });
   }
 
-  async updateUserInfo(info: string) {
-    const user = await this.getUserByEmail('244337462@qq.com');
-    user.info = `${Date.now()}`;
-    await this.userRepository.save(user);
+  async updateUserInfo(id: number, userInfo: UpdateUserInfoDto) {
+    const res = await this.userRepository.update({ id }, userInfo);
+    return res;
   }
 
   async getUserByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async getUserById(id: number): Promise<UserEntity | null> {
-    return this.userRepository.findOne({ where: { id } });
+  async getUserInfo(id: number): Promise<Omit<UserEntity, 'password'> | null> {
+    const userInfo = await this.userRepository.findOne({ where: { id } });
+    if (!userInfo) {
+      return null;
+    }
+    delete userInfo.password;
+    return userInfo;
   }
 }

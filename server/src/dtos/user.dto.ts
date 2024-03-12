@@ -31,3 +31,15 @@ export class LoginDto {
   })
   password: string;
 }
+
+export class UpdateUserInfoDto {
+  @IsNotEmpty({
+    message: '用户名不可为空',
+  })
+  username: string;
+  @IsNotEmpty({
+    message:'头像不可为空'
+  })
+  avatar: string;
+  info?: string;
+}

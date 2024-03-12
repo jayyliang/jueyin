@@ -15,7 +15,11 @@ axiosInstance.interceptors.request.use((request) => {
 axiosInstance.interceptors.response.use(
   (response: any) => {
     const data = response.data;
-    if (data.status !== 200) {
+    if (data.status === 401 && location.href.includes("user")) {
+      location.href = `${location.protocol}//${
+        location.host
+      }/#/login?redirect_url=${encodeURIComponent(location.href)}`;
+    } else if (data.status !== 200) {
       message.error(data.message);
       return Promise.reject(data.message);
     }
