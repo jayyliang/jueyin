@@ -14,6 +14,7 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import { AuthGuard } from './guards/auth.guard';
 import { CommonModule } from './modules/common/common.module';
 import { NestMinioModule } from 'nestjs-minio';
+import { ArticleModule } from './modules/article/article.module';
 const getDatabaseConfig = () => {
   const configService = new ConfigService();
   return TypeOrmModule.forRoot({
@@ -60,6 +61,7 @@ const getMinioConfig = () => {
   imports: [
     UserModule,
     CommonModule,
+    ArticleModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

@@ -24,7 +24,6 @@ const UserInfo = () => {
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (
     e
   ) => {
-    console.log(e.target.files);
     if (!e.target.files) {
       return;
     }

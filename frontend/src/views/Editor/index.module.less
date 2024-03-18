@@ -1,0 +1,30 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.title {
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+.editor {
+  flex: 1;
+  overflow-y: auto;
+  & > div {
+    height: calc(100% - 20px);
+  }
+  :global {
+    .bytemd {
+      height: 100%;
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+}

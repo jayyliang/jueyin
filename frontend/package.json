@@ -17,7 +17,11 @@
     "react": "18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.15.0",
-    "react-router-dom": "^6.15.0"
+    "react-router-dom": "^6.15.0",
+    "@bytemd/plugin-gfm": "^1.21.0",
+    "@bytemd/plugin-highlight": "^1.21.0",
+    "@bytemd/react": "^1.21.0",
+    "bytemd": "^1.21.0"
   },
   "devDependencies": {
     "vite": "^5.0.8",
