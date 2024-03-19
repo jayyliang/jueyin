@@ -7,6 +7,7 @@ const User = React.lazy(() => import("./views/User"));
 const UserInfo = React.lazy(() => import("./views/User/Info"));
 const Article = React.lazy(() => import("./views/User/Article"));
 const Editor = React.lazy(() => import("./views/Editor"));
+const Detail = React.lazy(() => import("./views/Detail"));
 const PageRouter = () => {
   return (
     <Suspense fallback={<div></div>}>
@@ -16,7 +17,7 @@ const PageRouter = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/editor" element={<Editor />} />
-
+          <Route path="/detail" element={<Detail />} />
           <Route path="/user" element={<User />}>
             <Route index path="/user/info" element={<UserInfo />}></Route>
             <Route path="/user/article" element={<Article />}></Route>

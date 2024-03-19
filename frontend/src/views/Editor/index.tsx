@@ -7,7 +7,7 @@ import { Editor as BEditor } from "@bytemd/react";
 import "bytemd/dist/index.css";
 import zh from "bytemd/locales/zh_Hans.json";
 import "highlight.js/styles/default.css";
-import "./editor.css";
+// import "./editor.css";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./index.module.less";
 import { Button, Form, Input, Popover, Row, Select, message } from "antd";

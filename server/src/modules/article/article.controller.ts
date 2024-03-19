@@ -6,6 +6,15 @@ import { CreateArticleDto, PublishArticleDto } from 'src/dtos/article.dto';
 @Controller('articles')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
+
+  @Get('getArticles/:pageNo/:pageSize')
+  async getArticles(
+    @Param('pageNo') pageNo: number,
+    @Param('pageSize') pageSize: number,
+  ) {
+    return await this.articleService.getArticles({ page: pageNo, pageSize });
+  }
+
   @Post('createOrUpdate')
   async createOrUpdate(
     @User('id') userId: number,

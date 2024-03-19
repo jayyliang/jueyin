@@ -31,3 +31,7 @@ export const getCategoryList = () => {
 export const getArticleInfo = (id: number) => {
   return axios.get(`${BASE_URL}/articles/getArticleInfo?id=${id}`);
 };
+
+export const getArticles = (pageNo: number, pageSize: number) => {
+  return axios.get(`${BASE_URL}/articles/getArticles/${pageNo}/${pageSize}`);
+};

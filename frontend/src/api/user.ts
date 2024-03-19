@@ -30,3 +30,7 @@ export const updateUserInfo = (params: {
 }) => {
   return axios.post(`${BASE_URL}/users/updateUserInfo`, params);
 };
+
+export const getUserInfoById = (id: number) => {
+  return axios.get(`${BASE_URL}/users/getUserInfoById/${id}`);
+};

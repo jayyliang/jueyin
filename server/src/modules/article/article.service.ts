@@ -5,7 +5,7 @@ import { ArticleEntity } from '../../entities/article.entity';
 import { FindManyOptions, Repository } from 'typeorm';
 import { UserEntity } from '../../entities/user.entity';
 import { CategoryEntity } from '../../entities/category.entity';
-
+import { PaginationService } from '../../services/pagination.service';
 @Injectable()
 export class ArticleService {
   constructor(
@@ -16,6 +16,20 @@ export class ArticleService {
     @InjectRepository(CategoryEntity)
     private categoryRepository: Repository<CategoryEntity>,
   ) {}
+
+  async getArticles(params: { page: number; pageSize: number }) {
+    const paginationService = new PaginationService<ArticleEntity>(
+      this.articleRepository,
+    );
+    const res = await paginationService.paginate({
+      ...params,
+      options: {
+        select: ['id', 'categoryId', 'introduction', 'title', 'creatorName'],
+        where: { status: 1, isDeleted: 0 },
+      },
+    });
+    return res;
+  }
 
   async createOrUpdate(
     createArticleDto: CreateArticleDto,

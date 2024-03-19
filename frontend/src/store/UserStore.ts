@@ -4,6 +4,18 @@ class User {
   constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
-  userInfo = {}
+  userInfo = {
+    id: 0,
+    username: "",
+    avatar: "",
+  };
+
+  updateUserInfo = (userInfo: {
+    id: number;
+    username: string;
+    avatar: string;
+  }) => {
+    this.userInfo = userInfo;
+  };
 }
 export default new User();

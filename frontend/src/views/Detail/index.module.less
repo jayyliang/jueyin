@@ -1,32 +1,36 @@
-.container {
-  height: 100%;
+.userInfo {
   display: flex;
-  flex-direction: column;
+  background-color: #fff;
+  align-items: center;
+  padding: 0 20px;
+  h4 {
+    margin-left: 16px;
+  }
 }
 
-.contentWrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-
+.content {
+  margin: 20px;
+  background-color: #fff;
+  padding: 2px;
+  // padding: 10px;
   :global {
     /*
- * NOTE:
- * - The use of browser-specific styles (-moz-, -webkit-) should be avoided.
- *   If used, they may not render correctly for people reading the email in
- *   a different browser than the one from which the email was sent.
- * - The use of state-dependent styles (like a:hover) don't work because they
- *   don't match at the time the styles are made explicit. (In email, styles
- *   must be explicitly applied to all elements -- stylesheets get stripped.)
- */
+* NOTE:
+* - The use of browser-specific styles (-moz-, -webkit-) should be avoided.
+*   If used, they may not render correctly for people reading the email in
+*   a different browser than the one from which the email was sent.
+* - The use of state-dependent styles (like a:hover) don't work because they
+*   don't match at the time the styles are made explicit. (In email, styles
+*   must be explicitly applied to all elements -- stylesheets get stripped.)
+*/
 
     /* This is the overall wrapper, it should be treated as the `body` section. */
     .markdown-here-wrapper {
     }
 
     /* To add site specific rules, you can use the `data-md-url` attribute that we
-   add to the wrapper element. Note that rules like this are used depending
-   on the URL you're *sending* from, not the URL where the recipient views it.
+ add to the wrapper element. Note that rules like this are used depending
+ on the URL you're *sending* from, not the URL where the recipient views it.
 */
     /* .markdown-here-wrapper[data-md-url*="mail.yahoo."] ul { color: red; } */
 
@@ -78,7 +82,7 @@ Note that we only use a top margin and not a bottom margin -- this prevents the
 */
     p {
       /* !important is needed here because Hotmail/Outlook.com uses !important to
-     kill the margin in <p>. We need this to win. */
+   kill the margin in <p>. We need this to win. */
       margin: 0 0 1.2em 0 !important;
     }
 
@@ -252,25 +256,6 @@ Note that we only use a top margin and not a bottom margin -- this prevents the
     strong,
     b {
       color: #bf360c;
-    }
-  }
-}
-.title {
-  margin: 20px;
-  width: calc(100% - 40px);
-}
-.editor {
-  flex: 1;
-  overflow-y: auto;
-  & > div {
-    height: calc(100% - 20px);
-  }
-  :global {
-    .bytemd {
-      height: 100%;
-      img {
-        max-width: 100%;
-      }
     }
   }
 }

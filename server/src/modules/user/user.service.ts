@@ -85,4 +85,12 @@ export class UserService {
     delete userInfo.password;
     return userInfo;
   }
+
+  async getUserInfoById(id: number) {
+    const userInfo = await this.userRepository.findOne({
+      where: { id },
+      select: ['avatar', 'id', 'info', 'username'],
+    });
+    return userInfo
+  }
 }

@@ -14,3 +14,4 @@ export class PublishArticleDto {
   @IsNotEmpty()
   categoryId: number;
 }
+

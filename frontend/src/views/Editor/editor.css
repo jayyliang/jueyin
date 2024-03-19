@@ -50,13 +50,13 @@ pre code {
 
 /* In edit mode, Wordpress uses a `* { font: ...;} rule+style that makes highlighted
 code look non-monospace. This rule will override it. */
-.markdown-here-wrapper[data-md-url*='wordpress.'] code span {
+.markdown-here-wrapper[data-md-url*="wordpress."] code span {
   font: inherit;
 }
 
 /* Wordpress adds a grey background to `pre` elements that doesn't go well with
 our syntax highlighting. */
-.markdown-here-wrapper[data-md-url*='wordpress.'] pre {
+.markdown-here-wrapper[data-md-url*="wordpress."] pre {
   background-color: transparent;
 }
 

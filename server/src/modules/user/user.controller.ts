@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpException,
+  Param,
   Post,
   Query,
   Req,
@@ -70,5 +71,9 @@ export class UserController {
   ): Promise<boolean> {
     await this.userService.updateUserInfo(userId, userInfo);
     return true;
+  }
+  @Get('getUserInfoById/:id')
+  async getUserInfoById(@Param('id') id: number) {
+    return await this.userService.getUserInfoById(id);
   }
 }
