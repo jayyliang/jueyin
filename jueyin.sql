@@ -13,3 +13,36 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `users_email_IDX` (`email`,`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4;
+
+
+-- jueyin.articles definition
+
+CREATE TABLE `articles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT NULL,
+  `content` mediumtext,
+  `introduction` varchar(100) DEFAULT NULL,
+  `views` int(11) DEFAULT '0',
+  `likes` int(11) DEFAULT '0',
+  `favorites` int(11) DEFAULT '0',
+  `creator_id` int(11) DEFAULT NULL,
+  `creator_name` varchar(100) DEFAULT NULL,
+  `category_id` int(4) DEFAULT NULL,
+  `is_deleted` tinyint(4) DEFAULT '0',
+  `status` int(4) DEFAULT '0',
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `articles_creator_id_IDX` (`creator_id`,`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4;
+
+
+-- jueyin.categorys definition
+
+CREATE TABLE `categorys` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
