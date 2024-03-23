@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { isEmpty } from 'lodash';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
@@ -16,7 +17,7 @@ export class AuthGuard implements CanActivate {
     } else {
       // 检查是否有用户信息，如果没有，抛出异常
       const isExpire = request.user && request.user.exp < Date.now();
-      if (!request.user || isExpire) {
+      if (isEmpty(request.user) || isExpire) {
         throw new UnauthorizedException('未登录');
       }
 

@@ -1,5 +1,7 @@
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { UserModule } from './modules/user/user.module';
+import { LikeModule } from './modules/like/like.module';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
@@ -62,6 +64,7 @@ const getMinioConfig = () => {
     UserModule,
     CommonModule,
     ArticleModule,
+    LikeModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

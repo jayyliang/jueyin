@@ -46,3 +46,16 @@ CREATE TABLE `categorys` (
   `updated_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `like_records` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `target_id` int(11) DEFAULT NULL,
+  `type` int(4) DEFAULT NULL,
+  `created_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `value` int(4) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `like_records_target_id_IDX` (`target_id`,`user_id`,`type`) USING BTREE,
+  KEY `like_records_user_id_IDX` (`user_id`,`target_id`,`type`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;

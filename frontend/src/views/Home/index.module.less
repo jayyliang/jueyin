@@ -3,8 +3,13 @@
   height: calc(100vh - 100px);
   overflow: auto;
   padding: 0 16px;
-  margin: 8px 32px 0 32px;
+  margin: 8px 15% 0 15%;
   .listItem {
     cursor: pointer;
+  }
+  :global {
+    .ant-list-item-action {
+      margin-left: 0 !important;
+    }
   }
 }
