@@ -14,7 +14,7 @@ export class LikeController {
     @Body('targetId') targetId: number,
     @Body('value') value: ELike,
     @Body('type') type: ELikeType,
-  ) {
+  ): Promise<boolean> {
     if (
       !userId ||
       !targetId ||
@@ -36,7 +36,7 @@ export class LikeController {
     @User('id') userId: number,
     @Body('targetIds') targetIds: number[],
     @Body('type') type: ELikeType,
-  ) {
+  ): Promise<Record<string, { count: number; isLike: boolean }>> {
     if (
       !userId ||
       !targetIds ||
