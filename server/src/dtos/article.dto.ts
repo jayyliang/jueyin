@@ -13,5 +13,5 @@ export class PublishArticleDto {
   introduction: string;
   @IsNotEmpty()
   categoryId: number;
+  time?: Date;
 }
-

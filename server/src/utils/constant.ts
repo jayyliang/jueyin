@@ -9,3 +9,9 @@ export const enum ELike {
   LIKE = 1,
   UNLINKE = 0,
 }
+
+export const enum EArticleStatus {
+  DRAFT = 0,
+  PUBLISH = 1,
+  PUBLISHING = 2,
+}

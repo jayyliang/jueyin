@@ -10,7 +10,16 @@ import "highlight.js/styles/default.css";
 // import "./editor.css";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./index.module.less";
-import { Button, Form, Input, Popover, Row, Select, message } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Popover,
+  Row,
+  Select,
+  message,
+} from "antd";
 import {
   createOrUpdateArticle,
   getArticleInfo,
@@ -18,8 +27,8 @@ import {
   publishArticle,
 } from "../../api/article";
 import { debounce, throttle } from "lodash";
+import dayjs from "dayjs";
 const plugins = [gfm(), highlight()];
-
 const Editor = () => {
   const navigate = useNavigate();
   const { id } = useQuery();
@@ -78,6 +87,9 @@ const Editor = () => {
 
   const publish = async () => {
     const fields = await form.validateFields();
+    if (fields.time) {
+      fields.time = dayjs(fields.time).format("YYYY-MM-DD HH:mm:ss");
+    }
     const res = await publishArticle({
       id,
       ...fields,
@@ -127,6 +139,35 @@ const Editor = () => {
                 >
                   <Input.TextArea maxLength={100} showCount />
                 </Form.Item>
+                {data.status === 0 && (
+                  <Form.Item name="time" label="定时发布">
+                    <DatePicker
+                      disabledTime={() => {
+                        const range = (start: number, end: number) => {
+                          const result = [];
+                          for (let i = start; i < end; i++) {
+                            result.push(i);
+                          }
+                          return result;
+                        };
+                        const now = new Date();
+                        const hour = now.getHours();
+                        const minute = now.getMinutes();
+                        return {
+                          disabledHours: () =>
+                            range(0, 24).filter((h) => h < hour),
+                          disabledMinutes: () =>
+                            range(0, 60).filter((m) => m - 5 < minute),
+                        };
+                      }}
+                      disabledDate={(current) => {
+                        return current && current < dayjs().startOf("day");
+                      }}
+                      showTime={{ format: "HH:mm" }}
+                      format="YYYY-MM-DD HH:mm"
+                    />
+                  </Form.Item>
+                )}
                 <Button onClick={publish} type="primary">
                   发布
                 </Button>

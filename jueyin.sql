@@ -59,3 +59,16 @@ CREATE TABLE `like_records` (
   KEY `like_records_target_id_IDX` (`target_id`,`user_id`,`type`) USING BTREE,
   KEY `like_records_user_id_IDX` (`user_id`,`target_id`,`type`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+-- jueyin.schedule_records definition
+CREATE TABLE `schedule_records` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`target_id` int(11) DEFAULT NULL,
+`excution_time` timestamp DEFAULT NULL,
+`status` int(4) DEFAULT '0',
+`created_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+`type` int(11) NOT NULL,
+PRIMARY KEY (`id`),
+KEY `schedule_records_excution_time_IDX` (`excution_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -15,7 +15,7 @@ axiosInstance.interceptors.request.use((request) => {
 axiosInstance.interceptors.response.use(
   (response: any) => {
     const data = response.data;
-    if (data.status === 401 && location.href.includes("user")) {
+    if (data.status === 401) {
       location.href = `${location.protocol}//${
         location.host
       }/#/login?redirect_url=${encodeURIComponent(location.href)}`;

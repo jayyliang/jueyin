@@ -17,6 +17,8 @@ import { AuthGuard } from './guards/auth.guard';
 import { CommonModule } from './modules/common/common.module';
 import { NestMinioModule } from 'nestjs-minio';
 import { ArticleModule } from './modules/article/article.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleService } from './services/schedule.service';
 const getDatabaseConfig = () => {
   const configService = new ConfigService();
   return TypeOrmModule.forRoot({
@@ -72,6 +74,7 @@ const getMinioConfig = () => {
     getRedisConfig(),
     JwtModule.register({}),
     getMinioConfig(),
+    ScheduleModule.forRoot(),
   ],
   providers: [
     {
@@ -91,6 +94,7 @@ const getMinioConfig = () => {
       useClass: AuthGuard,
     },
     AuthService,
+    ScheduleService,
   ],
 })
 export class AppModule {
