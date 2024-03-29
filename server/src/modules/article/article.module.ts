@@ -7,6 +7,7 @@ import { ArticleService } from './article.service';
 import { UserEntity } from '../../entities/user.entity';
 import { CategoryEntity } from '../../entities/category.entity';
 import { ScheduleRecordEntity } from '../../entities/schedule-record.entity';
+import { MeiliSearchService } from '../../services/meilisearch.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -17,6 +18,6 @@ import { ScheduleRecordEntity } from '../../entities/schedule-record.entity';
     ]),
   ],
   controllers: [ArticleController],
-  providers: [ArticleService],
+  providers: [ArticleService, MeiliSearchService],
 })
 export class ArticleModule {}

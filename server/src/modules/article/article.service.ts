@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { CreateArticleDto, PublishArticleDto } from '../../dtos/article.dto';
+import {
+  CreateArticleDto,
+  PublishArticleDto,
+  SearchArticleDto,
+} from '../../dtos/article.dto';
 import { ArticleEntity } from '../../entities/article.entity';
 import {
   FindManyOptions,
   LessThanOrEqual,
   Repository,
   EntityManager,
+  Like,
+  In,
 } from 'typeorm';
 import { UserEntity } from '../../entities/user.entity';
 import { CategoryEntity } from '../../entities/category.entity';
@@ -14,6 +20,8 @@ import { ScheduleRecordEntity } from '../../entities/schedule-record.entity';
 
 import { PaginationService } from '../../services/pagination.service';
 import { Cron } from '@nestjs/schedule';
+import { MeiliSearchService } from '../../services/meilisearch.service';
+import { ARTICLE_INDEX } from '../../utils/constant';
 @Injectable()
 export class ArticleService {
   constructor(
@@ -27,7 +35,19 @@ export class ArticleService {
     private scheduleRecordRepository: Repository<ScheduleRecordEntity>,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
+
+    private meiliSearchService: MeiliSearchService,
   ) {}
+
+  async pushAllArticles() {
+    const list = await this.articleRepository.find({
+      where: {
+        status: 1,
+        isDeleted: 0,
+      },
+    });
+    await this.meiliSearchService.addDocument(ARTICLE_INDEX, list);
+  }
 
   async getArticles(params: { page: number; pageSize: number }) {
     const paginationService = new PaginationService<ArticleEntity>(
@@ -81,6 +101,7 @@ export class ArticleService {
       if (record) {
         record.excutionTime = publishArticleDto.time;
         await this.scheduleRecordRepository.update({ id: record.id }, record);
+        this.pushArticleToMeiliSearch([id]);
       } else {
         await this.scheduleRecordRepository.save({
           targetId: id,
@@ -134,6 +155,36 @@ export class ArticleService {
     };
   }
 
+  async searchArticle(params: SearchArticleDto) {
+    const { keyword, pageNo, pageSize } = params;
+    const res: any = await this.meiliSearchService.search(
+      ARTICLE_INDEX,
+      keyword,
+      {
+        attributesToRetrieve: [
+          'id',
+          'categoryId',
+          'introduction',
+          'title',
+          'creatorName',
+        ],
+        attributesToHighlight: ['title', 'introduction'],
+        limit: pageSize,
+        offset: (pageNo - 1) * pageSize,
+      },
+    );
+    const hits = res.hits;
+    const nbHits = res.nbHits;
+    return {
+      list: hits,
+      total: nbHits,
+      pageSize: pageSize,
+      currentPage: pageNo,
+      totalPage: Math.ceil(nbHits / pageSize),
+      isEnd: Math.ceil(nbHits / pageSize) === pageNo,
+    };
+  }
+
   async getArticleList(
     pageNo: number,
     pageSize: number,
@@ -160,6 +211,15 @@ export class ArticleService {
 
   async getCategoryList() {
     return await this.categoryRepository.find();
+  }
+
+  async pushArticleToMeiliSearch(ids: number[]) {
+    const articles = await this.articleRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
+    await this.meiliSearchService.addDocument(ARTICLE_INDEX, articles);
   }
 
   @Cron('15 * * * * *') // 每分钟第15秒执行一次
@@ -192,5 +252,6 @@ export class ArticleService {
         { status: 1 },
       );
     });
+    this.pushArticleToMeiliSearch(records.map((record) => record.targetId));
   }
 }

@@ -15,3 +15,5 @@ export const enum EArticleStatus {
   PUBLISH = 1,
   PUBLISHING = 2,
 }
+
+export const ARTICLE_INDEX = 'articles';

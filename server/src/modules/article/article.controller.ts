@@ -1,7 +1,12 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { User } from 'src/decorators/user.decorator';
-import { CreateArticleDto, PublishArticleDto } from 'src/dtos/article.dto';
+import {
+  CreateArticleDto,
+  PublishArticleDto,
+  SearchArticleDto,
+} from 'src/dtos/article.dto';
+import { NoAuth } from '../../decorators/no-auth.decorator';
 
 @Controller('articles')
 export class ArticleController {
@@ -58,5 +63,16 @@ export class ArticleController {
   @Get('getCategoryList')
   async getCategoryList() {
     return await this.articleService.getCategoryList();
+  }
+
+  @Post('searchArticle')
+  async searchArticle(@Body() searchDto: SearchArticleDto) {
+    return await this.articleService.searchArticle(searchDto);
+  }
+
+  @NoAuth()
+  @Get('pushAllArticles')
+  async pushAllArticles() {
+    return await this.articleService.pushAllArticles();
   }
 }

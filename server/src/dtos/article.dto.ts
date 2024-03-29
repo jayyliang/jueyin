@@ -15,3 +15,12 @@ export class PublishArticleDto {
   categoryId: number;
   time?: Date;
 }
+
+export class SearchArticleDto {
+  @IsNotEmpty()
+  keyword: string;
+  @IsNotEmpty()
+  pageNo: number;
+  @IsNotEmpty()
+  pageSize: number;
+}
