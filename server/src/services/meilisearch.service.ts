@@ -21,7 +21,6 @@ export class MeiliSearchService {
         },
       },
     });
-    console.log(this.client);
   }
 
   async search(indexName: string, query: string, options: SearchParams) {

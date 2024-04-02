@@ -60,4 +60,7 @@ export class ArticleEntity {
     name: 'updated_time',
   })
   updatedTime: Date;
+
+  @Column()
+  version: number;
 }

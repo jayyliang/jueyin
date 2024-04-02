@@ -17,3 +17,4 @@ export const enum EArticleStatus {
 }
 
 export const ARTICLE_INDEX = 'articles';
+export const QUEUE = 'queue'

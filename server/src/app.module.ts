@@ -11,7 +11,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { GlobalValidationPipe } from './pipes/global-validation.pipe';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './services/auth.service';
-import { JWT_SECRET } from './utils/constant';
+import { JWT_SECRET, QUEUE } from './utils/constant';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { AuthGuard } from './guards/auth.guard';
 import { CommonModule } from './modules/common/common.module';
@@ -19,6 +19,9 @@ import { NestMinioModule } from 'nestjs-minio';
 import { ArticleModule } from './modules/article/article.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ScheduleService } from './services/schedule.service';
+import { BullModule } from '@nestjs/bull';
+import { QueueConsumerService } from './services/queue-consumer.service';
+import { ArticleService } from './modules/article/article.service';
 const getDatabaseConfig = () => {
   const configService = new ConfigService();
   return TypeOrmModule.forRoot({
@@ -61,6 +64,20 @@ const getMinioConfig = () => {
   });
 };
 
+const getBullConfig = () => {
+  const configService = new ConfigService();
+  const host = configService.get<string>('REDIS_HOST', 'localhost');
+  const port = configService.get<number>('REDIS_PORT', 6379);
+  return BullModule.forRoot({
+    redis: {
+      host,
+      port,
+      db: 2,
+      password: configService.get<string>('REDIS_PASSWORD', 'password'),
+    },
+  });
+};
+
 @Module({
   imports: [
     UserModule,
@@ -75,6 +92,7 @@ const getMinioConfig = () => {
     JwtModule.register({}),
     getMinioConfig(),
     ScheduleModule.forRoot(),
+    getBullConfig(),
   ],
   providers: [
     {

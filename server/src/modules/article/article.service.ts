@@ -22,6 +22,10 @@ import { PaginationService } from '../../services/pagination.service';
 import { Cron } from '@nestjs/schedule';
 import { MeiliSearchService } from '../../services/meilisearch.service';
 import { ARTICLE_INDEX } from '../../utils/constant';
+import { wait } from '../../utils';
+import { QueueProviderService } from '../../services/queue-provider.service';
+import { JobRecordEntity } from '../../entities/job-record.entity';
+const { v4: uuidv4 } = require('uuid');
 @Injectable()
 export class ArticleService {
   constructor(
@@ -33,10 +37,13 @@ export class ArticleService {
     private categoryRepository: Repository<CategoryEntity>,
     @InjectRepository(ScheduleRecordEntity)
     private scheduleRecordRepository: Repository<ScheduleRecordEntity>,
+    @InjectRepository(JobRecordEntity)
+    private jobRecordRepository: Repository<JobRecordEntity>,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
 
     private meiliSearchService: MeiliSearchService,
+    private queueProviderService: QueueProviderService,
   ) {}
 
   async pushAllArticles() {
@@ -133,6 +140,7 @@ export class ArticleService {
   }
 
   async getArticleInfo(id: number) {
+    this.addView(id);
     return await this.articleRepository.findOne({ where: { id } });
   }
 
@@ -253,5 +261,66 @@ export class ArticleService {
       );
     });
     this.pushArticleToMeiliSearch(records.map((record) => record.targetId));
+  }
+
+  async addView(articleId: number) {
+    // const oldVersion = await this.articleRepository.findOne({
+    //   where: { id: articleId },
+    //   select: ['version'],
+    // });
+    // const res = await this.articleRepository.query(
+    //   'UPDATE articles SET views = views + 1,version = version + 1 WHERE id = ? AND version = ?',
+    //   [articleId, oldVersion.version],
+    // );
+    // if (res.affectedRows === 0) {
+    //   await wait();
+    //   await this.addView(articleId);
+    // }
+    // return this.entityManager.transaction(async (entityManager) => {
+    //   const query = `SELECT views FROM articles WHERE id = ? FOR UPDATE`;
+    //   const res = await entityManager.query(query, [articleId]);
+    //   const value = res[0].views + 1;
+    //   await entityManager.update(
+    //     ArticleEntity,
+    //     { id: articleId },
+    //     { views: value },
+    //   );
+    // });
+    const addQueue = async (retryTime = 3) => {
+      if (retryTime === 0) {
+        return;
+      }
+      try {
+        const jobId = uuidv4();
+        await this.queueProviderService.pushAddView({
+          jobId,
+          articleId,
+        });
+      } catch (error) {
+        addQueue(retryTime - 1);
+      }
+    };
+
+    await addQueue();
+  }
+  async handleAddView(data: { jobId: string; articleId: number }) {
+    const { jobId, articleId } = data;
+    await this.entityManager.transaction(async (transactionalEntityManager) => {
+      try {
+        await transactionalEntityManager.save(JobRecordEntity, {
+          jobId,
+        });
+      } catch (error) {
+        if (error?.sqlMessage?.includes('Duplicate entry')) {
+          return;
+        } else {
+          throw Error();
+        }
+      }
+      await this.articleRepository.query(
+        'UPDATE articles SET views = views + 1,version = version + 1 WHERE id = ?',
+        [articleId],
+      );
+    });
   }
 }

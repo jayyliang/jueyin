@@ -8,6 +8,11 @@ import { UserEntity } from '../../entities/user.entity';
 import { CategoryEntity } from '../../entities/category.entity';
 import { ScheduleRecordEntity } from '../../entities/schedule-record.entity';
 import { MeiliSearchService } from '../../services/meilisearch.service';
+import { QueueProviderService } from '../../services/queue-provider.service';
+import { BullModule } from '@nestjs/bull';
+import { QUEUE } from '../../utils/constant';
+import { QueueConsumerService } from '../../services/queue-consumer.service';
+import { JobRecordEntity } from '../../entities/job-record.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -15,9 +20,19 @@ import { MeiliSearchService } from '../../services/meilisearch.service';
       UserEntity,
       CategoryEntity,
       ScheduleRecordEntity,
+      JobRecordEntity,
     ]),
+    BullModule.registerQueue({
+      name: QUEUE,
+      // processors:
+    }),
   ],
   controllers: [ArticleController],
-  providers: [ArticleService, MeiliSearchService],
+  providers: [
+    ArticleService,
+    MeiliSearchService,
+    QueueProviderService,
+    QueueConsumerService,
+  ],
 })
 export class ArticleModule {}
