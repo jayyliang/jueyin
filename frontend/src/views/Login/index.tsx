@@ -1,16 +1,15 @@
 import { Button, Form, FormInstance, Input, Row, Tabs, message } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import styles from "./index.module.less";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getVerifyCode, login, register } from "../../api/user";
 import useQuery from "../../hooks/useQuery";
 import { useNavigate } from "react-router";
 const REQUIRED_RULE = [{ required: true, message: "请输入${label}" }];
 const VerifyCodeButton = ({ form }: { form: FormInstance }) => {
   const [seconds, setSeconds] = useState(0);
-  const handleClick = async () => {
-    const res = await form.validateFields(["email"]);
-    await getVerifyCode(res.email);
+  const doSend = async (email: string, code: string) => {
+    await getVerifyCode(email, code);
     setSeconds(60);
     let timer = setInterval(() => {
       setSeconds((preSeconds) => {
@@ -22,6 +21,24 @@ const VerifyCodeButton = ({ form }: { form: FormInstance }) => {
         }
       });
     }, 1000);
+  };
+  const handleClick = async () => {
+    const res = await form.validateFields(["email"]);
+    try {
+      window.grecaptcha.reset();
+    } catch (error) {}
+    window.grecaptcha.render("robot", {
+      sitekey: "6LdRQdEpAAAAAJarSxyd4XjRL7SkbiWXmqRpLZet", //公钥
+      callback: function (code: string) {
+        doSend(form.getFieldValue("email"), code);
+      },
+      "expired-callback": () => {
+        message.error("验证过期");
+      },
+      "error-callback": () => {
+        message.error("验证错误");
+      },
+    });
   };
 
   return (
@@ -66,17 +83,20 @@ const Login = () => {
             <Input type="password" placeholder="输入密码" />
           </Form.Item>
           {withCode && (
-            <Row>
-              <Form.Item
-                style={{ marginRight: 20 }}
-                name="code"
-                label="验证码"
-                rules={REQUIRED_RULE}
-              >
-                <Input placeholder="输入验证码" />
-              </Form.Item>
-              <VerifyCodeButton form={form} />
-            </Row>
+            <>
+              <Row>
+                <Form.Item
+                  style={{ marginRight: 20 }}
+                  name="code"
+                  label="验证码"
+                  rules={REQUIRED_RULE}
+                >
+                  <Input placeholder="输入验证码" />
+                </Form.Item>
+                <VerifyCodeButton form={form} />
+              </Row>
+              <div id="robot"></div>
+            </>
           )}
         </Form>
         <Button loading={loading} onClick={handleSubmit} type="primary">

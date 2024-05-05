@@ -3,8 +3,8 @@ export function getUserInfo() {
   return axios.get(`${BASE_URL}/users/getUserInfo`);
 }
 
-export const getVerifyCode = (email: string) => {
-  return axios.get(`${BASE_URL}/users/getVerifyCode?email=${email}`);
+export const getVerifyCode = (email: string,code:string) => {
+  return axios.get(`${BASE_URL}/users/getVerifyCode?email=${email}&code=${code}`);
 };
 
 export const register = (params: {

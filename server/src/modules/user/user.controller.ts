@@ -15,7 +15,7 @@ import {
   LoginDto,
   UpdateUserInfoDto,
 } from '../../dtos/user.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { User } from '../../decorators/user.decorator';
 import { NoAuth } from '../..//decorators/no-auth.decorator';
 
@@ -25,11 +25,19 @@ export class UserController {
 
   @Get('getVerifyCode')
   @NoAuth()
-  async getVerifyCode(@Query('email') email: string): Promise<string> {
+  async getVerifyCode(
+    @Query('email') email: string,
+    @Query('code') googleCode: string,
+    @Req() request: Request,
+  ): Promise<string> {
     if (!email) {
       throw new HttpException('邮箱不能为空', 500);
     }
-    const code = await this.userService.sendVerifyCode(email);
+    const code = await this.userService.sendVerifyCode(
+      email,
+      googleCode,
+      request.ip,
+    );
     return code;
   }
 

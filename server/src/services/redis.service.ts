@@ -8,6 +8,10 @@ export class RedisService {
     this.redis.select(2);
   }
 
+  getClient() {
+    return this.redis;
+  }
+
   async set(key: string, value: any, expire?: number) {
     if (expire > 0) {
       return this.redis.setex(key, expire, value);
